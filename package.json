@@ -1,0 +1,14 @@
+{
+  "name": "walrus-tools",
+  "version": "1.0.0",
+  "description": "FunCtional Tools for TypeScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Marlrus",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.0.2"
+  }
+}
