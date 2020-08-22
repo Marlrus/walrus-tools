@@ -125,6 +125,14 @@ export const pipe = <In, Out>(...fns: Function[]) => (x: In): Out => {
 	return tail.length > 0 ? pipe(...tail)(res) : res;
 };
 
+//Find convention
+export const fullPipe = <In, Out>(x: In, ...fns: Function[]): Out => {
+	const [head, ...tail] = fns;
+	const res = head(x);
+
+	return tail.length > 0 ? pipe(...tail)(res) : res;
+};
+
 export const pfCompose = (...fns: Function[]) => (x: any): any => {
 	const [last, initial] = decoupleTail(fns);
 	const res = last(x);
@@ -140,16 +148,36 @@ export const compose = <In, Out>(...fns: Function[]) => (x: In): Out => {
 	return initial.length > 0 ? compose(...initial)(res) : res;
 };
 
+export const fullCompose = <In, Out>(x: In, ...fns: Function[]): Out => {
+	const [last, initial] = decoupleTail(fns);
+	// const front = fns.slice(0, fns.length - 1);
+	const res = last(x);
+
+	return initial.length > 0 ? compose(...initial)(res) : res;
+};
+
 type MapCallbackFn<T, U> = (value: T, index: number, array: T[]) => U;
 
 export const map = <T, U>(fn: MapCallbackFn<T, U>, x: T[]): U[] => x.map(fn);
 
-// const arr = range(10);
+export const currMap = <T, U>(fn: MapCallbackFn<T, U>) => (x: T[]): U[] =>
+	x.map(fn);
 
-// const add2 = (x: number) => x + 2;
+export const pfMap = (fn: Function) => (x: any) => x.map(fn);
+
+//map obj
+
+const arr = range(10);
+
+const add2 = (x: number) => x + 2;
+const times10 = (x: number) => x * 10;
+
+hmm(currMap(add2));
+hmm(currMap(add2)(arr));
+hmm(fullCompose(1, add2, times10));
+hmm(fullPipe(1, add2, times10));
 // const toString = (x: any): string => x.toString();
 
-// const times10 = (x: number) => x * 10;
 // // const mult10add2 = pfCompose( add2, times10);
 // const add2mult10 = pipe<number, string>(add2, times10, toString);
 // const test = map(add2mult10, arr);
