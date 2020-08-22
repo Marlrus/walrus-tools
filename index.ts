@@ -1,3 +1,7 @@
+/*=======================
+Impure: Logging and Erring
+=======================*/
+
 export const hmm = (vars?: any) => {
 	if (vars === undefined || vars === null) {
 		console.log(`ಠ_ಠ`);
@@ -13,6 +17,15 @@ export const err = (message?: string) => {
 		throw new Error(message);
 	}
 };
+
+export const logger = <T>(x: T) => {
+	hmm(x);
+	return x;
+};
+
+/*===========================
+Iterable and Array Creators
+============================*/
 
 export const iter = (loops: number) => [...Array(loops).keys()];
 
@@ -55,6 +68,105 @@ export const pyRange = (start: number, end?: number, step = 1) => {
 
 	return arr.map(x => x + start + x * (step - 1));
 };
+
+export const randomInt = (top: number, start = 0) => {
+	const range = top - start + 1;
+	return Math.floor(Math.random() * range + start);
+};
+
+/*=====================
+ Basic array Transformations
+ =====================*/
+
+export const head = <T>(arr: T[]) => arr.slice(0, 1)[0];
+
+export const first = head;
+
+export const last = <T>(arr: T[]) => arr.slice(arr.length - 1)[0];
+
+export const tail = <T>(arr: T[]) => arr.slice(1, arr.length);
+
+export const initial = <T>(arr: T[]) => arr.slice(0, arr.length - 1);
+
+export const decoupleHead = <T>(arr: T[]): [T, T[]] => [head(arr), tail(arr)];
+
+export const decoupleTail = <T>(arr: T[]): [T, T[]] => [
+	last(arr),
+	initial(arr),
+];
+
+/*=====================
+	Getters
+======================*/
+
+export const prop = <T extends keyof U, U>(key: T, obj: U) => obj[key];
+
+//Ambiguous
+export const pluck = <T extends keyof U, U>(keys: T[], obj: U) =>
+	keys.map(k => prop(k, obj));
+
+/*==================
+	POINTFREE
+==================*/
+
+export const pfProp = (key: string) => (obj: any) => obj[key];
+
+export const pfPipe = (...fns: Function[]) => (x: any): any => {
+	const [head, ...tail] = fns;
+	const res = head(x);
+
+	return tail.length > 0 ? pipe(...tail)(res) : res;
+};
+
+export const pipe = <In, Out>(...fns: Function[]) => (x: In): Out => {
+	const [head, ...tail] = fns;
+	const res = head(x);
+
+	return tail.length > 0 ? pipe(...tail)(res) : res;
+};
+
+export const pfCompose = (...fns: Function[]) => (x: any): any => {
+	const [last, initial] = decoupleTail(fns);
+	const res = last(x);
+
+	return initial.length > 0 ? compose(...initial)(res) : res;
+};
+
+export const compose = <In, Out>(...fns: Function[]) => (x: In): Out => {
+	const [last, initial] = decoupleTail(fns);
+	// const front = fns.slice(0, fns.length - 1);
+	const res = last(x);
+
+	return initial.length > 0 ? compose(...initial)(res) : res;
+};
+
+type MapCallbackFn<T, U> = (value: T, index: number, array: T[]) => U;
+
+export const map = <T, U>(fn: MapCallbackFn<T, U>, x: T[]): U[] => x.map(fn);
+
+// const arr = range(10);
+
+// const add2 = (x: number) => x + 2;
+// const toString = (x: any): string => x.toString();
+
+// const times10 = (x: number) => x * 10;
+// // const mult10add2 = pfCompose( add2, times10);
+// const add2mult10 = pipe<number, string>(add2, times10, toString);
+// const test = map(add2mult10, arr);
+
+// hmm(test);
+
+// const toString = (x: any) => x.toString();
+
+// const twelve: string = mult10add2(1);
+// hmm({ twelve });
+
+// const thirty = add2mult10(1);
+// hmm({ thirty });
+
+/*========================
+Complex Fn Related
+=========================*/
 
 // type MapFunction<T> = (value: T, index?: number, array?: any[]) => unknown;
 // type iterableObject = { [key: string]: any };
@@ -102,63 +214,3 @@ export const pyRange = (start: number, end?: number, step = 1) => {
 
 // hmm(test1);
 // hmm(test2);
-
-// export const pipe = (...fns) => x => {
-// 	const [head, ...tail] = fns;
-// 	const res = head(x);
-
-// 	return tail.length > 0 ? pipe(...tail)(res) : res;
-// };
-
-// export const compose = (...fns) => x => {
-// 	const last = fns[fns.length - 1];
-// 	const front = fns.slice(0, fns.length - 1);
-// 	const res = last(x);
-
-// 	return front.length > 0 ? compose(...front)(res) : res;
-// };
-
-export const randomInt = (top: number, start = 0) => {
-	const range = top - start + 1;
-	return Math.floor(Math.random() * range + start);
-};
-
-export const logger = <T>(x: T) => {
-	hmm(x);
-	return x;
-};
-
-export const head = <T>(arr: T[]) => arr.slice(0, 1)[0];
-
-export const first = head;
-
-export const last = <T>(arr: T[]) => arr.slice(arr.length - 1)[0];
-
-export const tail = <T>(arr: T[]) => arr.slice(1, arr.length);
-
-export const initial = <T>(arr: T[]) => arr.slice(0, arr.length - 1);
-
-// export const prop = (key, obj) => {
-// 	if (obj === undefined)
-// 		return obj => {
-// 			return obj[key];
-// 		};
-// 	return obj[key];
-// };
-
-// export const props = (keys, obj) => {
-// 	if (obj === undefined) {
-// 		return obj => keys.reduce((p, c) => ({ ...p, [c]: obj[c] }), {});
-// 	}
-// 	return keys.reduce((p, c) => ({ ...p, [c]: obj[c] }), {});
-// };
-
-// const obj = { x: 1, y: 2, z: 3 };
-
-// let x = prop('x', obj);
-
-// const yz = props(['y', 'z']);
-
-// hmm({ x });
-// hmm(yz(obj));
-// hmm(obj);
