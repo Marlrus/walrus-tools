@@ -99,7 +99,7 @@ export const decoupleTail = <T>(arr: T[]): [T, T[]] => [
 	Getters
 ======================*/
 
-export const prop = <T extends keyof U, U>(key: T, obj: U) => obj[key];
+export const prop = <T extends keyof U, U>(key: T, obj: U): U[T] => obj[key];
 
 //Ambiguous
 export const pluck = <T extends keyof U, U>(keys: T[], obj: U) =>
@@ -171,6 +171,78 @@ export const dirFilter = <T>(fn: FilterCBFn<T>, x: T[]) => x.filter(fn);
 
 export const filter = <T>(fn: FilterCBFn<T>) => (x: T[]) => x.filter(fn);
 
+export const pfFilter = (fn: Function) => (x: any) => x.filter(fn);
+
+//Reduce
+
+export function reduce<T>(
+	callbackFn: (
+		previousValue: T,
+		currentValue: T,
+		currentIndex: number,
+		array: T[],
+	) => T,
+): (x: T[]) => T;
+export function reduce<T>(
+	callbackFn: (
+		previousValue: T,
+		currentValue: T,
+		currentIndex: number,
+		array: T[],
+	) => T,
+	initialValue: T,
+): (x: T[]) => T;
+export function reduce<T, U>(
+	callbackFn: (
+		previousValue: U,
+		currentValue: T,
+		currentIndex: number,
+		array: T[],
+	) => U,
+	initialValue: U,
+): (x: T[]) => U;
+export function reduce(fn: any, initialValue?: any) {
+	return function (x: any[]) {
+		return initialValue ? x.reduce(fn, initialValue) : x.reduce(fn);
+	};
+}
+
+export const pfReduce = (fn: any, initialValue?: any) => (x: any[]) =>
+	initialValue ? x.reduce(fn, initialValue) : x.reduce(fn);
+
+export function dirReduce<T>(
+	x: T[],
+	callbackFn: (
+		previousValue: T,
+		currentValue: T,
+		currentIndex: number,
+		array: T[],
+	) => T,
+): T;
+export function dirReduce<T>(
+	x: T[],
+	callbackFn: (
+		previousValue: T,
+		currentValue: T,
+		currentIndex: number,
+		array: T[],
+	) => T,
+	initialValue: T,
+): T;
+export function dirReduce<T, U>(
+	x: T[],
+	callbackFn: (
+		previousValue: U,
+		currentValue: T,
+		currentIndex: number,
+		array: T[],
+	) => U,
+	initialValue: U,
+): U;
+export function dirReduce(x: any[], fn: any, initialValue?: any) {
+	return initialValue ? x.reduce(fn, initialValue) : x.reduce(fn);
+}
+
 const arr = range(10);
 
 const grtThan2 = (x: number) => x > 2;
@@ -178,19 +250,37 @@ const grtThan2 = (x: number) => x > 2;
 
 const add2 = (x: number) => x + 2;
 const times10 = (x: number) => x * 10;
+const totObj = (p: { total: number }, c: number) => ({ total: p.total + c });
+
+arr.reduce(totObj, { total: 0 });
+
+const testRed = reduce(totObj, { total: 0 });
+
+hmm(testRed);
+
 // const toString = (x: any) => x.toString();
 
 const add2Times10 = pipe(add2, times10);
 const times10plus2 = compose(add2, times10);
 
-const fltr2Add2Times10 = pipe<number[], number[]>(
+const fltr2Add2Times10 = pipe<typeof arr, ReturnType<typeof testRed>>(
+	logger,
 	filter(grtThan2),
-	map<number, number>(pipe(times10plus2, add2Times10))
+	logger,
+	map(pipe(times10plus2, add2Times10)),
+	logger,
+	reduce(totObj, { total: 0 }),
 );
 
 const tester = fltr2Add2Times10(arr);
 
 hmm(tester);
+
+const dirTest = dirReduce(arr, (p, c) => ({ total: p.total + c }), {
+	total: 0,
+});
+
+hmm(dirTest);
 
 // const concat = <T extends Arr, U extends Arr>(
 // 	arr1: T,

@@ -102,13 +102,31 @@ export const map = (fn) => (x) => x.map(fn);
 export const pfMap = (fn) => (x) => x.map(fn);
 export const dirFilter = (fn, x) => x.filter(fn);
 export const filter = (fn) => (x) => x.filter(fn);
+export const pfFilter = (fn) => (x) => x.filter(fn);
+export function reduce(fn, initialValue) {
+    return function (x) {
+        return initialValue ? x.reduce(fn, initialValue) : x.reduce(fn);
+    };
+}
+export const pfReduce = (fn, initialValue) => (x) => initialValue ? x.reduce(fn, initialValue) : x.reduce(fn);
+export function dirReduce(x, fn, initialValue) {
+    return initialValue ? x.reduce(fn, initialValue) : x.reduce(fn);
+}
 const arr = range(10);
 const grtThan2 = (x) => x > 2;
 const add2 = (x) => x + 2;
 const times10 = (x) => x * 10;
+const totObj = (p, c) => ({ total: p.total + c });
+arr.reduce(totObj, { total: 0 });
+const testRed = reduce(totObj, { total: 0 });
+hmm(testRed);
 const add2Times10 = pipe(add2, times10);
 const times10plus2 = compose(add2, times10);
-const fltr2Add2Times10 = pipe(filter(grtThan2), map(pipe(times10plus2, add2Times10)));
+const fltr2Add2Times10 = pipe(logger, filter(grtThan2), logger, map(pipe(times10plus2, add2Times10)), logger, reduce(totObj, { total: 0 }));
 const tester = fltr2Add2Times10(arr);
 hmm(tester);
+const dirTest = dirReduce(arr, (p, c) => ({ total: p.total + c }), {
+    total: 0,
+});
+hmm(dirTest);
 //# sourceMappingURL=index.js.map
