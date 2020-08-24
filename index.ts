@@ -1,5 +1,5 @@
 /*=======================
-Impure: Logging and Erring
+Utilities
 =======================*/
 
 export const hmm = (vars?: any) => {
@@ -111,6 +111,9 @@ export const pluck = <T extends keyof U, U>(keys: T[], obj: U) =>
 
 export const pfProp = (key: string) => (obj: any) => obj[key];
 
+export const pfPluck = (keys: string[], obj: any) =>
+	keys.map(k => prop(k, obj));
+
 export const pfPipe = (...fns: Function[]) => (x: any): any => {
 	const [head, ...tail] = fns;
 	const res = head(x);
@@ -126,7 +129,7 @@ export const pipe = <In, Out>(...fns: Function[]) => (x: In): Out => {
 };
 
 //Find convention
-export const fullPipe = <In, Out>(x: In, ...fns: Function[]): Out => {
+export const dirPipe = <In, Out>(x: In, ...fns: Function[]): Out => {
 	const [head, ...tail] = fns;
 	const res = head(x);
 
@@ -142,103 +145,72 @@ export const pfCompose = (...fns: Function[]) => (x: any): any => {
 
 export const compose = <In, Out>(...fns: Function[]) => (x: In): Out => {
 	const [last, initial] = decoupleTail(fns);
-	// const front = fns.slice(0, fns.length - 1);
 	const res = last(x);
 
 	return initial.length > 0 ? compose(...initial)(res) : res;
 };
 
-export const fullCompose = <In, Out>(x: In, ...fns: Function[]): Out => {
+export const dirCompose = <In, Out>(x: In, ...fns: Function[]): Out => {
 	const [last, initial] = decoupleTail(fns);
-	// const front = fns.slice(0, fns.length - 1);
 	const res = last(x);
 
 	return initial.length > 0 ? compose(...initial)(res) : res;
 };
 
-type MapCallbackFn<T, U> = (value: T, index: number, array: T[]) => U;
+type MapCBFn<T, U> = (value: T, index: number, array: T[]) => U;
 
-export const map = <T, U>(fn: MapCallbackFn<T, U>, x: T[]): U[] => x.map(fn);
+export const dirMap = <T, U>(fn: MapCBFn<T, U>, x: T[]): U[] => x.map(fn);
 
-export const currMap = <T, U>(fn: MapCallbackFn<T, U>) => (x: T[]): U[] =>
-	x.map(fn);
+export const map = <T, U>(fn: MapCBFn<T, U>) => (x: T[]): U[] => x.map(fn);
 
 export const pfMap = (fn: Function) => (x: any) => x.map(fn);
 
-//map obj
+type FilterCBFn<T> = (value: T, index: number, array: T[]) => boolean;
+
+export const dirFilter = <T>(fn: FilterCBFn<T>, x: T[]) => x.filter(fn);
+
+export const filter = <T>(fn: FilterCBFn<T>) => (x: T[]) => x.filter(fn);
 
 const arr = range(10);
 
+const grtThan2 = (x: number) => x > 2;
+// // const toString = (x: any): string => x.toString();
+
 const add2 = (x: number) => x + 2;
 const times10 = (x: number) => x * 10;
-
-hmm(currMap(add2));
-hmm(currMap(add2)(arr));
-hmm(fullCompose(1, add2, times10));
-hmm(fullPipe(1, add2, times10));
-// const toString = (x: any): string => x.toString();
-
-// // const mult10add2 = pfCompose( add2, times10);
-// const add2mult10 = pipe<number, string>(add2, times10, toString);
-// const test = map(add2mult10, arr);
-
-// hmm(test);
-
 // const toString = (x: any) => x.toString();
 
-// const twelve: string = mult10add2(1);
-// hmm({ twelve });
+const add2Times10 = pipe(add2, times10);
+const times10plus2 = compose(add2, times10);
 
-// const thirty = add2mult10(1);
-// hmm({ thirty });
+const fltr2Add2Times10 = pipe<number[], number[]>(
+	filter(grtThan2),
+	map<number, number>(pipe(times10plus2, add2Times10))
+);
+
+const tester = fltr2Add2Times10(arr);
+
+hmm(tester);
+
+// const concat = <T extends Arr, U extends Arr>(
+// 	arr1: T,
+// 	arr2: U
+// ): [...T, ...U] => [...arr1, ...arr2];
+
+// to enable deep level flatten use recursion with reduce and concat
+// function flatDeep<T>(arr: T[], d = 1): any[] {
+// 	return d > 0
+// 		? arr.reduce(
+// 				(acc, val) =>
+// 					acc.concat(Array.isArray(val) ? flatDeep(val, d - 1) : val),
+// 				[]
+// 		  )
+// 		: arr.slice();
+// }
+
+// hmm(flatDeep(arr, 1));
+// [1, 2, 3, 4, 5, 6]
 
 /*========================
 Complex Fn Related
 =========================*/
-
-// type MapFunction<T> = (value: T, index?: number, array?: any[]) => unknown;
-// type iterableObject = { [key: string]: any };
-
-// //Make it work with objects as well and DRY
-// export const map = <T, U extends [] | iterableObject>(
-// 	fn: MapFunction<T>,
-// 	iter?: U
-// ) => {
-// 	// if (iter === undefined) {
-// 	// 	return (iter: U) => {
-// 	// 		if (typeof iter !== 'object') return;
-
-// 	// 		if (Array.isArray(iter)) {
-// 	// 			return iter.map(fn);
-// 	// 		} else {
-// 	// 			const obj = {};
-// 	// 			for (const k in iter) {
-// 	// 				obj[k] = fn(iter[k]);
-// 	// 			}
-// 	// 			return obj;
-// 	// 		}
-// 	// 	};
-// 	// }
-
-// 	if (typeof iter !== 'object') return;
-
-// 	if (Array.isArray(iter)) {
-// 		return iter.map(fn);
-// 	} else {
-// 		const obj: iterableObject = {};
-// 		for (const k in iter) {
-// 			obj[k] = fn(iter[k] as any);
-// 		}
-// 		return obj;
-// 	}
-// };
-
-// const arr = [1, 2, 3];
-// const add: MapFunction<number> = (x: number) => x + 2;
-// const obj = { a: 1, b: 2, c: 3 };
-
-// const test1 = map(add, arr);
-// const test2 = map(add, obj);
-
-// hmm(test1);
-// hmm(test2);

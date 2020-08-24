@@ -66,6 +66,7 @@ export const decoupleTail = (arr) => [
 export const prop = (key, obj) => obj[key];
 export const pluck = (keys, obj) => keys.map(k => prop(k, obj));
 export const pfProp = (key) => (obj) => obj[key];
+export const pfPluck = (keys, obj) => keys.map(k => prop(k, obj));
 export const pfPipe = (...fns) => (x) => {
     const [head, ...tail] = fns;
     const res = head(x);
@@ -76,7 +77,7 @@ export const pipe = (...fns) => (x) => {
     const res = head(x);
     return tail.length > 0 ? pipe(...tail)(res) : res;
 };
-export const fullPipe = (x, ...fns) => {
+export const dirPipe = (x, ...fns) => {
     const [head, ...tail] = fns;
     const res = head(x);
     return tail.length > 0 ? pipe(...tail)(res) : res;
@@ -91,19 +92,23 @@ export const compose = (...fns) => (x) => {
     const res = last(x);
     return initial.length > 0 ? compose(...initial)(res) : res;
 };
-export const fullCompose = (x, ...fns) => {
+export const dirCompose = (x, ...fns) => {
     const [last, initial] = decoupleTail(fns);
     const res = last(x);
     return initial.length > 0 ? compose(...initial)(res) : res;
 };
-export const map = (fn, x) => x.map(fn);
-export const currMap = (fn) => (x) => x.map(fn);
+export const dirMap = (fn, x) => x.map(fn);
+export const map = (fn) => (x) => x.map(fn);
 export const pfMap = (fn) => (x) => x.map(fn);
+export const dirFilter = (fn, x) => x.filter(fn);
+export const filter = (fn) => (x) => x.filter(fn);
 const arr = range(10);
+const grtThan2 = (x) => x > 2;
 const add2 = (x) => x + 2;
 const times10 = (x) => x * 10;
-hmm(currMap(add2));
-hmm(currMap(add2)(arr));
-hmm(fullCompose(1, add2, times10));
-hmm(fullPipe(1, add2, times10));
+const add2Times10 = pipe(add2, times10);
+const times10plus2 = compose(add2, times10);
+const fltr2Add2Times10 = pipe(filter(grtThan2), map(pipe(times10plus2, add2Times10)));
+const tester = fltr2Add2Times10(arr);
+hmm(tester);
 //# sourceMappingURL=index.js.map
