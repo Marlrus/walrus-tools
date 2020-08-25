@@ -295,17 +295,55 @@ const sortIterable = <T extends AnyIterable>(obj: T): T => {
 const deepCopy = <T extends AnyIterable>(obj: T): T => {
 	const keys = Object.keys(obj);
 	return obj.length
-		? keys.reduce((sorted: any, key: string) => {
+		? keys.reduce((copy: any, key: string) => {
 				const node =
 					typeof obj[key] === 'object' ? deepCopy(obj[key]) : obj[key];
-				return (sorted[key] = node), sorted;
+				return (copy[key] = node), copy;
 		  }, [])
-		: keys.reduce((sorted: any, key: string) => {
+		: keys.reduce((copy: any, key: string) => {
 				const node =
 					typeof obj[key] === 'object' ? deepCopy(obj[key]) : obj[key];
-				return (sorted[key] = node), sorted;
+				return (copy[key] = node), copy;
 		  }, {});
 };
+
+const deepEquals = (x: any, y: any): any => {
+	const [xKeys, yKeys] = [Object.keys(x).sort(), Object.keys(y).sort()];
+	if (xKeys.toString() !== yKeys.toString()) return false;
+	for (const key of xKeys) {
+		const [typeX, typeY] = [typeof x[key], typeof y[key]];
+		if (typeX !== typeY) return false;
+		if (typeX === 'function' && x[key].toString() !== y[key].toString())
+			return false;
+		if (typeX !== 'function' && typeX !== 'object' && x[key] !== y[key])
+			return false;
+		if (typeX === 'object') {
+			const deepReturn = deepEquals(x[key], y[key]);
+			if (!deepReturn) return false;
+		}
+	}
+	return true;
+};
+
+// const user = {
+// 	name: 'Moerse',
+// 	hai: () => hmm('Hai'),
+// 	num: [1, 2, 3, [1, 2, { a: 1, b: 2, bai: () => hmm('bai') }]],
+// 	tie: 1,
+// };
+
+// const user2 = {
+// 	hai: () => hmm('Hai'),
+// 	num: [1, 2, 3, [1, 2, { b: 2, a: 1, bai: () => hmm('bai') }]],
+// 	tie: 1,
+// 	name: 'Moerse',
+// };
+
+// startT('DeepEqualsTest');
+// hmm(deepEquals(user, user2));
+// stopT('DeepEqualsTest');
+// user.hai();
+// user2.hai();
 
 /*=========================
 TESTING GROUNDS
