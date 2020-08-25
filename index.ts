@@ -111,7 +111,7 @@ export const decoupleTail = <T>(arr: T[]): [T, T[]] => [
 export const dirProp = <T extends keyof U, U>(key: T, obj: U): U[T] => obj[key];
 
 export const prop = (key: string) => (obj: any) => obj[key];
-//Ambiguous
+
 export const pluck = <T extends keyof U, U>(keys: T[], obj: U) =>
 	keys.map(k => dirProp(k, obj));
 
@@ -136,7 +136,6 @@ export const pipe = <In, Out>(...fns: Function[]) => (x: In): Out => {
 	return tail.length > 0 ? pipe(...tail)(res) : res;
 };
 
-//Find convention
 export const dirPipe = <In, Out>(x: In, ...fns: Function[]): Out => {
 	const [head, ...tail] = fns;
 	const res = head(x);
@@ -168,7 +167,15 @@ export const dirCompose = <In, Out>(x: In, ...fns: Function[]): Out => {
 type MapCBFn<T, U> = (value: T, index: number, array: T[]) => U;
 
 export const dirMap = <T, U>(fn: MapCBFn<T, U>, x: T[]): U[] => x.map(fn);
-
+/**
+ * Curried Function.
+ *
+ * TS Typing: map: <T, U>(fn: MapCBFn<T, U>) => (x: T[]) => U[]
+ *
+ * First Execution: Takes a Map Callback Fn as its first argument.
+ *
+ * Second Execution: Takes a value to be mapped over.
+ */
 export const map = <T, U>(fn: MapCBFn<T, U>) => (x: T[]): U[] => x.map(fn);
 
 export const pfMap = (fn: Function) => (x: any) => x.map(fn);
@@ -252,8 +259,13 @@ export function dirReduce(x: any[], fn: any, initialValue?: any) {
 }
 
 /*========================
-Complex Fn Related
+Object and Array Utilities
 =========================*/
+
+export const equals = (x: any, y: any) =>
+	JSON.stringify(x) === JSON.stringify(y);
+
+export const deepCopy = <T>(x: T): T => JSON.parse(JSON.stringify(x));
 
 /*=========================
 TESTING GROUNDS

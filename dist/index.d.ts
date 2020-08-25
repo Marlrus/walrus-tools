@@ -27,6 +27,15 @@ export declare const compose: <In, Out>(...fns: Function[]) => (x: In) => Out;
 export declare const dirCompose: <In, Out>(x: In, ...fns: Function[]) => Out;
 declare type MapCBFn<T, U> = (value: T, index: number, array: T[]) => U;
 export declare const dirMap: <T, U>(fn: MapCBFn<T, U>, x: T[]) => U[];
+/**
+ * Curried Function.
+ *
+ * TS Typing: map: <T, U>(fn: MapCBFn<T, U>) => (x: T[]) => U[]
+ *
+ * First Execution: Takes a Map Callback Fn as its first argument.
+ *
+ * Second Execution: Takes a value to be mapped over.
+ */
 export declare const map: <T, U>(fn: MapCBFn<T, U>) => (x: T[]) => U[];
 export declare const pfMap: (fn: Function) => (x: any) => any;
 declare type FilterCBFn<T> = (value: T, index: number, array: T[]) => boolean;
@@ -40,5 +49,7 @@ export declare const pfReduce: (fn: any, initialValue?: any) => (x: any[]) => an
 export declare function dirReduce<T>(x: T[], callbackFn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T): T;
 export declare function dirReduce<T>(x: T[], callbackFn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue: T): T;
 export declare function dirReduce<T, U>(x: T[], callbackFn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;
+export declare const equals: (x: any, y: any) => boolean;
+export declare const deepCopy: <T>(x: T) => T;
 export {};
 //# sourceMappingURL=index.d.ts.map
