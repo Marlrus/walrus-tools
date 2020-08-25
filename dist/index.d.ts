@@ -50,6 +50,6 @@ export declare function dirReduce<T>(x: T[], callbackFn: (previousValue: T, curr
 export declare function dirReduce<T>(x: T[], callbackFn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue: T): T;
 export declare function dirReduce<T, U>(x: T[], callbackFn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;
 export declare const equals: (x: any, y: any) => boolean;
-export declare const deepCopy: <T>(x: T) => T;
+export declare const copyValues: <T>(x: T) => T;
 export {};
 //# sourceMappingURL=index.d.ts.map

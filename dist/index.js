@@ -149,12 +149,42 @@ export function dirReduce(x, fn, initialValue) {
 /*========================
 Object and Array Utilities
 =========================*/
-export const equals = (x, y) => JSON.stringify(x) === JSON.stringify(y);
-export const deepCopy = (x) => JSON.parse(JSON.stringify(x));
+export const equals = (x, y) => {
+    if (typeof x && typeof y) {
+        return typeof x === 'object'
+            ? JSON.stringify(sortIterable(x)) === JSON.stringify(sortIterable(y))
+            : x === y;
+    }
+    return false;
+};
+export const copyValues = (x) => JSON.parse(JSON.stringify(x));
+const sortIterable = (obj) => {
+    const keys = Object.keys(obj).sort();
+    return obj.length
+        ? keys.reduce((sorted, key) => {
+            const node = typeof obj[key] === 'object' ? sortIterable(obj[key]) : obj[key];
+            return (sorted[key] = node), sorted;
+        }, [])
+        : keys.reduce((sorted, key) => {
+            const node = typeof obj[key] === 'object' ? sortIterable(obj[key]) : obj[key];
+            return (sorted[key] = node), sorted;
+        }, {});
+};
+const deepCopy = (obj) => {
+    const keys = Object.keys(obj);
+    return obj.length
+        ? keys.reduce((sorted, key) => {
+            const node = typeof obj[key] === 'object' ? deepCopy(obj[key]) : obj[key];
+            return (sorted[key] = node), sorted;
+        }, [])
+        : keys.reduce((sorted, key) => {
+            const node = typeof obj[key] === 'object' ? deepCopy(obj[key]) : obj[key];
+            return (sorted[key] = node), sorted;
+        }, {});
+};
 /*=========================
 TESTING GROUNDS
 ===========================*/
-// const arr = iter(10);
 // const grtThan2 = (x: number) => x > 2;
 // const add2 = (x: number) => x + 2;
 // const times10 = (x: number) => x * 10;
