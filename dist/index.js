@@ -18,6 +18,11 @@ export const logger = (x) => {
     hmm(x);
     return x;
 };
+export const startT = (name) => console.time(name);
+export const stopT = (name) => console.timeEnd(name);
+export const table = (tabularData, properties) => properties
+    ? console.table(tabularData, properties)
+    : console.table(tabularData);
 export const iter = (loops) => [...Array(loops).keys()];
 export const range = (end, start = 0, step = 1) => {
     if (end < 0)
@@ -63,10 +68,10 @@ export const decoupleTail = (arr) => [
     last(arr),
     initial(arr),
 ];
-export const prop = (key, obj) => obj[key];
-export const pluck = (keys, obj) => keys.map(k => prop(k, obj));
-export const pfProp = (key) => (obj) => obj[key];
-export const pfPluck = (keys, obj) => keys.map(k => prop(k, obj));
+export const dirProp = (key, obj) => obj[key];
+export const prop = (key) => (obj) => obj[key];
+export const pluck = (keys, obj) => keys.map(k => dirProp(k, obj));
+export const pfPluck = (keys, obj) => keys.map(k => dirProp(k, obj));
 export const pfPipe = (...fns) => (x) => {
     const [head, ...tail] = fns;
     const res = head(x);
@@ -112,21 +117,16 @@ export const pfReduce = (fn, initialValue) => (x) => initialValue ? x.reduce(fn,
 export function dirReduce(x, fn, initialValue) {
     return initialValue ? x.reduce(fn, initialValue) : x.reduce(fn);
 }
-const arr = range(10);
+const arr = iter(10);
 const grtThan2 = (x) => x > 2;
 const add2 = (x) => x + 2;
 const times10 = (x) => x * 10;
-const totObj = (p, c) => ({ total: p.total + c });
-arr.reduce(totObj, { total: 0 });
-const testRed = reduce(totObj, { total: 0 });
-hmm(testRed);
 const add2Times10 = pipe(add2, times10);
 const times10plus2 = compose(add2, times10);
-const fltr2Add2Times10 = pipe(logger, filter(grtThan2), logger, map(pipe(times10plus2, add2Times10)), logger, reduce(totObj, { total: 0 }));
-const tester = fltr2Add2Times10(arr);
-hmm(tester);
-const dirTest = dirReduce(arr, (p, c) => ({ total: p.total + c }), {
-    total: 0,
-});
-hmm(dirTest);
+const totObj = (p, c) => ({ total: p.total + c });
+const fltr2Add2Times10 = pipe(filter(grtThan2), map(compose(times10plus2, add2Times10)), reduce(totObj, { total: 0 }));
+const fltr2Times10Add2 = pipe(filter(grtThan2), map(pipe(times10plus2, add2Times10)), reduce(totObj, { total: 0 }));
+const composeTest = fltr2Add2Times10(arr);
+const pipeTest = fltr2Times10Add2(arr);
+table({ composeTest, pipeTest });
 //# sourceMappingURL=index.js.map

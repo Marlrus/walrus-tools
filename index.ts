@@ -1,5 +1,5 @@
 /*=======================
-Utilities
+Utilities IMPURE
 =======================*/
 
 export const hmm = (vars?: any) => {
@@ -22,6 +22,15 @@ export const logger = <T>(x: T) => {
 	hmm(x);
 	return x;
 };
+
+export const startT = (name: string) => console.time(name);
+
+export const stopT = (name: string) => console.timeEnd(name);
+
+export const table = (tabularData: any, properties?: string[]) =>
+	properties
+		? console.table(tabularData, properties)
+		: console.table(tabularData);
 
 /*===========================
 Iterable and Array Creators
@@ -99,20 +108,19 @@ export const decoupleTail = <T>(arr: T[]): [T, T[]] => [
 	Getters
 ======================*/
 
-export const prop = <T extends keyof U, U>(key: T, obj: U): U[T] => obj[key];
+export const dirProp = <T extends keyof U, U>(key: T, obj: U): U[T] => obj[key];
 
+export const prop = (key: string) => (obj: any) => obj[key];
 //Ambiguous
 export const pluck = <T extends keyof U, U>(keys: T[], obj: U) =>
-	keys.map(k => prop(k, obj));
+	keys.map(k => dirProp(k, obj));
+
+export const pfPluck = (keys: string[], obj: any) =>
+	keys.map(k => dirProp(k, obj));
 
 /*==================
 	POINTFREE
 ==================*/
-
-export const pfProp = (key: string) => (obj: any) => obj[key];
-
-export const pfPluck = (keys: string[], obj: any) =>
-	keys.map(k => prop(k, obj));
 
 export const pfPipe = (...fns: Function[]) => (x: any): any => {
 	const [head, ...tail] = fns;
@@ -243,64 +251,38 @@ export function dirReduce(x: any[], fn: any, initialValue?: any) {
 	return initialValue ? x.reduce(fn, initialValue) : x.reduce(fn);
 }
 
-const arr = range(10);
-
-const grtThan2 = (x: number) => x > 2;
-// // const toString = (x: any): string => x.toString();
-
-const add2 = (x: number) => x + 2;
-const times10 = (x: number) => x * 10;
-const totObj = (p: { total: number }, c: number) => ({ total: p.total + c });
-
-arr.reduce(totObj, { total: 0 });
-
-const testRed = reduce(totObj, { total: 0 });
-
-hmm(testRed);
-
-// const toString = (x: any) => x.toString();
-
-const add2Times10 = pipe(add2, times10);
-const times10plus2 = compose(add2, times10);
-
-const fltr2Add2Times10 = pipe<typeof arr, ReturnType<typeof testRed>>(
-	logger,
-	filter(grtThan2),
-	logger,
-	map(pipe(times10plus2, add2Times10)),
-	logger,
-	reduce(totObj, { total: 0 }),
-);
-
-const tester = fltr2Add2Times10(arr);
-
-hmm(tester);
-
-const dirTest = dirReduce(arr, (p, c) => ({ total: p.total + c }), {
-	total: 0,
-});
-
-hmm(dirTest);
-
-// const concat = <T extends Arr, U extends Arr>(
-// 	arr1: T,
-// 	arr2: U
-// ): [...T, ...U] => [...arr1, ...arr2];
-
-// to enable deep level flatten use recursion with reduce and concat
-// function flatDeep<T>(arr: T[], d = 1): any[] {
-// 	return d > 0
-// 		? arr.reduce(
-// 				(acc, val) =>
-// 					acc.concat(Array.isArray(val) ? flatDeep(val, d - 1) : val),
-// 				[]
-// 		  )
-// 		: arr.slice();
-// }
-
-// hmm(flatDeep(arr, 1));
-// [1, 2, 3, 4, 5, 6]
-
 /*========================
 Complex Fn Related
 =========================*/
+
+/*=========================
+TESTING GROUNDS
+===========================*/
+
+const arr = iter(10);
+
+const grtThan2 = (x: number) => x > 2;
+
+const add2 = (x: number) => x + 2;
+const times10 = (x: number) => x * 10;
+
+const add2Times10 = pipe(add2, times10);
+const times10plus2 = compose(add2, times10);
+const totObj = (p: { total: number }, c: number) => ({ total: p.total + c });
+
+const fltr2Add2Times10 = pipe<typeof arr, ReturnType<typeof totObj>>(
+	filter(grtThan2),
+	map(compose(times10plus2, add2Times10)),
+	reduce(totObj, { total: 0 }),
+);
+
+const fltr2Times10Add2 = pipe<typeof arr, ReturnType<typeof totObj>>(
+	filter(grtThan2),
+	map(pipe(times10plus2, add2Times10)),
+	reduce(totObj, { total: 0 }),
+);
+
+const composeTest = fltr2Add2Times10(arr);
+const pipeTest = fltr2Times10Add2(arr);
+
+table({ composeTest, pipeTest });
