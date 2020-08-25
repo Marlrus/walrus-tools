@@ -154,16 +154,24 @@ export const deepCopy = (x) => JSON.parse(JSON.stringify(x));
 /*=========================
 TESTING GROUNDS
 ===========================*/
-const arr = iter(10);
-const grtThan2 = (x) => x > 2;
-const add2 = (x) => x + 2;
-const times10 = (x) => x * 10;
-const add2Times10 = pipe(add2, times10);
-const times10plus2 = compose(add2, times10);
-const totObj = (p, c) => ({ total: p.total + c });
-const fltr2Add2Times10 = pipe(filter(grtThan2), map(compose(times10plus2, add2Times10)), reduce(totObj, { total: 0 }));
-const fltr2Times10Add2 = pipe(filter(grtThan2), map(pipe(times10plus2, add2Times10)), reduce(totObj, { total: 0 }));
-const composeTest = fltr2Add2Times10(arr);
-const pipeTest = fltr2Times10Add2(arr);
-table({ composeTest, pipeTest });
+// const arr = iter(10);
+// const grtThan2 = (x: number) => x > 2;
+// const add2 = (x: number) => x + 2;
+// const times10 = (x: number) => x * 10;
+// const add2Times10 = pipe(add2, times10);
+// const times10plus2 = compose(add2, times10);
+// const totObj = (p: { total: number }, c: number) => ({ total: p.total + c });
+// const fltr2Add2Times10 = pipe<typeof arr, ReturnType<typeof totObj>>(
+// 	filter(grtThan2),
+// 	map(compose(times10plus2, add2Times10)),
+// 	reduce(totObj, { total: 0 }),
+// );
+// const fltr2Times10Add2 = pipe<typeof arr, ReturnType<typeof totObj>>(
+// 	filter(grtThan2),
+// 	map(pipe(times10plus2, add2Times10)),
+// 	reduce(totObj, { total: 0 }),
+// );
+// const composeTest = fltr2Add2Times10(arr);
+// const pipeTest = fltr2Times10Add2(arr);
+// table({ composeTest, pipeTest });
 //# sourceMappingURL=index.js.map
