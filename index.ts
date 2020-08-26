@@ -262,7 +262,7 @@ export function dirReduce(x: any[], fn: any, initialValue?: any) {
 Object and Array Utilities
 =========================*/
 
-export const equals = (x: any, y: any) => {
+export const dataEquals = (x: any, y: any) => {
 	if (typeof x && typeof y) {
 		return typeof x === 'object'
 			? JSON.stringify(sortIterable(x)) === JSON.stringify(sortIterable(y))
@@ -277,7 +277,7 @@ interface AnyIterable {
 	[key: string]: any;
 }
 
-const sortIterable = <T extends AnyIterable>(obj: T): T => {
+export const sortIterable = <T extends AnyIterable>(obj: T): T => {
 	const keys = Object.keys(obj).sort();
 	return obj.length
 		? keys.reduce((sorted: any, key: string) => {
@@ -292,7 +292,7 @@ const sortIterable = <T extends AnyIterable>(obj: T): T => {
 		  }, {});
 };
 
-const deepCopy = <T extends AnyIterable>(obj: T): T => {
+export const deepCopy = <T extends AnyIterable>(obj: T): T => {
 	const keys = Object.keys(obj);
 	return obj.length
 		? keys.reduce((copy: any, key: string) => {
@@ -307,19 +307,25 @@ const deepCopy = <T extends AnyIterable>(obj: T): T => {
 		  }, {});
 };
 
-const deepEquals = (x: any, y: any): any => {
-	const [xKeys, yKeys] = [Object.keys(x).sort(), Object.keys(y).sort()];
-	if (xKeys.toString() !== yKeys.toString()) return false;
-	for (const key of xKeys) {
-		const [typeX, typeY] = [typeof x[key], typeof y[key]];
-		if (typeX !== typeY) return false;
-		if (typeX === 'function' && x[key].toString() !== y[key].toString())
-			return false;
-		if (typeX !== 'function' && typeX !== 'object' && x[key] !== y[key])
-			return false;
-		if (typeX === 'object') {
-			const deepReturn = deepEquals(x[key], y[key]);
-			if (!deepReturn) return false;
+const primitiveEquals = (x: any, y: any) => {
+	const [typeX, typeY] = [typeof x, typeof y];
+	if (typeX !== typeY) return false;
+	if (typeX !== 'function' && typeX !== 'object' && x !== y) return false;
+	if (typeX === 'function' && x.toString() !== y.toString()) return false;
+	return true;
+};
+
+export const equals = (x: any, y: any) => {
+	if (!primitiveEquals(x, y)) return false;
+	if (typeof x === 'object') {
+		const [xKeys, yKeys] = [Object.keys(x).sort(), Object.keys(y).sort()];
+		if (xKeys.toString() !== yKeys.toString()) return false;
+		for (const key of xKeys) {
+			if (!primitiveEquals(x[key], y[key])) return false;
+			if (typeof x[key] === 'object') {
+				const deepReturn = equals(x[key], y[key]);
+				if (!deepReturn) return false;
+			}
 		}
 	}
 	return true;
@@ -339,11 +345,8 @@ const deepEquals = (x: any, y: any): any => {
 // 	name: 'Moerse',
 // };
 
-// startT('DeepEqualsTest');
-// hmm(deepEquals(user, user2));
-// stopT('DeepEqualsTest');
-// user.hai();
-// user2.hai();
+// hmm(equals(user, user2));
+// hmm(dataEquals(user, user2));
 
 /*=========================
 TESTING GROUNDS

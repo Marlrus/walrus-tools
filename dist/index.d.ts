@@ -49,7 +49,13 @@ export declare const pfReduce: (fn: any, initialValue?: any) => (x: any[]) => an
 export declare function dirReduce<T>(x: T[], callbackFn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T): T;
 export declare function dirReduce<T>(x: T[], callbackFn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue: T): T;
 export declare function dirReduce<T, U>(x: T[], callbackFn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;
-export declare const equals: (x: any, y: any) => boolean;
+export declare const dataEquals: (x: any, y: any) => boolean;
 export declare const copyValues: <T>(x: T) => T;
+interface AnyIterable {
+    [key: string]: any;
+}
+export declare const sortIterable: <T extends AnyIterable>(obj: T) => T;
+export declare const deepCopy: <T extends AnyIterable>(obj: T) => T;
+export declare const equals: (x: any, y: any) => boolean;
 export {};
 //# sourceMappingURL=index.d.ts.map
