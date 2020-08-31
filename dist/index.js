@@ -29,8 +29,12 @@ export const table = (tabularData, properties) => properties
 /*===========================
 Iterable and Array Creators
 ============================*/
-export const iter = (loops) => [...Array(loops).keys()];
-export const range = (end, start = 0, step = 1) => {
+//Remove keys part (OBSOLETE do with Array()) moved Fnality to Range and pyRange
+// export const iter = (loops: number) => [...Array(loops).keys()];
+//make range default iter
+export const range = (end, start, step = 1) => {
+    if (!start)
+        return [...Array(end).keys()];
     // if (end < 0 || start > end || step <= 0) return;
     if (end < 0)
         err('End param cannot be a negative integer.');
@@ -49,10 +53,8 @@ export const range = (end, start = 0, step = 1) => {
 // // const finalArr = Array.from(keysIterator);
 // // hmm({ finalArr });
 export const pyRange = (start, end, step = 1) => {
-    if (end === undefined) {
-        end = start;
-        start = 0;
-    }
+    if (!end)
+        return [...Array(start).keys()];
     if (end < 0)
         err('End param cannot be a negative integer.');
     if (start > end)
@@ -64,10 +66,6 @@ export const pyRange = (start, end, step = 1) => {
     const length = Math.ceil((end - start) / step);
     const arr = [...Array(length).keys()];
     return arr.map(x => x + start + x * (step - 1));
-};
-export const randomInt = (top, start = 0) => {
-    const range = top - start + 1;
-    return Math.floor(Math.random() * range + start);
 };
 /*=====================
  Basic array Transformations
