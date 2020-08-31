@@ -39,10 +39,9 @@ Iterable and Array Creators
 //Remove keys part (OBSOLETE do with Array()) moved Fnality to Range and pyRange
 // export const iter = (loops: number) => [...Array(loops).keys()];
 
-//make range default iter
 export const range = (end: number, start?: number, step = 1) => {
 	if (!start) return [...Array(end).keys()];
-	// if (end < 0 || start > end || step <= 0) return;
+
 	if (end < 0) err('End param cannot be a negative integer.');
 	if (start > end) err('Start cannot be after end param.');
 	if (start < 0) err('Start has to be a positive integer.');
@@ -54,14 +53,6 @@ export const range = (end: number, start?: number, step = 1) => {
 
 	return arr.map(x => x + start + x * (step - 1));
 };
-
-// // const emptyArr = Array(5);
-
-// // const keysIterator = emptyArr.keys();
-
-// // const finalArr = Array.from(keysIterator);
-
-// // hmm({ finalArr });
 
 export const pyRange = (start: number, end?: number, step = 1) => {
 	if (!end) return [...Array(start).keys()];
@@ -98,6 +89,40 @@ export const decoupleTail = <T>(arr: T[]): [T, T[]] => [
 	last(arr),
 	initial(arr),
 ];
+
+/*======================
+ STRING and DATE Utils
+========================*/
+
+// split words
+export const splitWords = (sentence: string) => sentence.split(' ');
+
+//Capitalize
+export const capitalize = (word: string) => {
+	const lcWord = word.toLowerCase();
+	return `${lcWord[0].toUpperCase()}${lcWord.slice(1, lcWord.length)}`;
+};
+// Catpizalize first word
+export const capitalizeFirst = (sentence: string) => {
+	const [first, rest] = decoupleHead(sentence.toLowerCase().split(' '));
+	return `${capitalize(first)} ${rest.join(' ')}`;
+};
+
+// Capitalize all add exceptions
+export const capitalizeAll = (sentence: string, ...exceptions: string[]) =>
+	sentence
+		.toLowerCase()
+		.split(' ')
+		.map(word => (exceptions.includes(word) ? word : capitalize(word)))
+		.join(' ');
+
+// const phrase = 'HELLO THERE FELLOW TRAVELLER.';
+
+// hmm(capitalizeAll(phrase, 'there'));
+// Remove Hour
+// Get Hour
+// toLocaleString ?
+// Price utils ?
 
 /*=====================
 	Getters

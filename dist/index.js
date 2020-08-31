@@ -31,11 +31,9 @@ Iterable and Array Creators
 ============================*/
 //Remove keys part (OBSOLETE do with Array()) moved Fnality to Range and pyRange
 // export const iter = (loops: number) => [...Array(loops).keys()];
-//make range default iter
 export const range = (end, start, step = 1) => {
     if (!start)
         return [...Array(end).keys()];
-    // if (end < 0 || start > end || step <= 0) return;
     if (end < 0)
         err('End param cannot be a negative integer.');
     if (start > end)
@@ -48,10 +46,6 @@ export const range = (end, start, step = 1) => {
     const arr = [...Array(length).keys()];
     return arr.map(x => x + start + x * (step - 1));
 };
-// // const emptyArr = Array(5);
-// // const keysIterator = emptyArr.keys();
-// // const finalArr = Array.from(keysIterator);
-// // hmm({ finalArr });
 export const pyRange = (start, end, step = 1) => {
     if (!end)
         return [...Array(start).keys()];
@@ -80,6 +74,33 @@ export const decoupleTail = (arr) => [
     last(arr),
     initial(arr),
 ];
+/*======================
+ STRING and DATE Utils
+========================*/
+// split words
+export const splitWords = (sentence) => sentence.split(' ');
+//Capitalize
+export const capitalize = (word) => {
+    const lcWord = word.toLowerCase();
+    return `${lcWord[0].toUpperCase()}${lcWord.slice(1, lcWord.length)}`;
+};
+// Catpizalize first word
+export const capitalizeFirst = (sentence) => {
+    const [first, rest] = decoupleHead(sentence.toLowerCase().split(' '));
+    return `${capitalize(first)} ${rest.join(' ')}`;
+};
+// Capitalize all add exceptions
+export const capitalizeAll = (sentence, ...exceptions) => sentence
+    .toLowerCase()
+    .split(' ')
+    .map(word => (exceptions.includes(word) ? word : capitalize(word)))
+    .join(' ');
+// const phrase = 'HELLO THERE FELLOW TRAVELLER.';
+// hmm(capitalizeAll(phrase, 'there'));
+// Remove Hour
+// Get Hour
+// toLocaleString ?
+// Price utils ?
 /*=====================
     Getters
 ======================*/
