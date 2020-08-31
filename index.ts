@@ -180,13 +180,42 @@ export const map = <T, U>(fn: MapCBFn<T, U>) => (x: T[]): U[] => x.map(fn);
 
 export const pfMap = (fn: Function) => (x: any) => x.map(fn);
 
-// type FilterCBFn<T> = (value: T, index: number, array: T[]) => boolean;
+type FilterCBFn<T> = (value: T, index?: number, array?: T[]) => boolean;
 
-export const dirFilter = <T>(fn: FilterCBFn<T>, x: T[]) => x.filter(fn);
+export const evalPredicates = <T>(...fns: FilterCBFn<T>[]) => (
+	x: T,
+): boolean => {
+	const [head, tail] = decoupleHead(fns);
+	return tail.length === 0
+		? head(x)
+		: head(x)
+		? evalPredicates(...tail)(x)
+		: false;
+};
 
-export const filter = <T>(fn: FilterCBFn<T>) => (x: T[]) => x.filter(fn);
+export const dirFilter = <T>(x: T[], ...fns: FilterCBFn<T>[]) => {
+	return fns.length === 1
+		? x.filter(fns[0])
+		: x.filter(evalPredicates(...fns));
+};
 
-export const pfFilter = (fn: Function) => (x: any) => x.filter(fn);
+export const filter = <T>(...fns: FilterCBFn<T>[]) => (x: T[]) => {
+	return fns.length === 1
+		? x.filter(fns[0])
+		: x.filter(evalPredicates(...fns));
+};
+
+export const pfFilter = (...fns: FilterCBFn<any>[]) => (x: any) => {
+	return fns.length === 1
+		? x.filter(fns[0])
+		: x.filter(evalPredicates(...fns));
+};
+
+// export const dirFilter = <T>(fn: FilterCBFn<T>, x: T[]) => x.filter(fn);
+
+// export const filter = <T>(fn: FilterCBFn<T>) => (x: T[]) => x.filter(fn);
+
+// export const pfFilter = (fn: Function) => (x: any) => x.filter(fn);
 
 //Reduce
 
@@ -352,25 +381,19 @@ export const equals = (x: any, y: any) => {
 TESTING GROUNDS
 ===========================*/
 
-type FilterCBFn<T> = (value: T, index?: number, array?: T[]) => boolean;
-
-export const evaluate = <T>(fns: FilterCBFn<T>[]) => (x: T): any => {
-	const [head, tail] = decoupleHead(fns);
-	return tail.length === 0 ? head(x) : head(x) ? evaluate(tail)(x) : false;
-};
-
-export const compoundFilter = <T>(...fns: FilterCBFn<T>[]) => (x: T[]) =>
-	x.filter(evaluate(fns));
-
 // const gt3 = (num: number) => num > 3;
 
 // const lt10 = (num: number) => num < 10;
 
 // const oneTo20 = range(21, 1);
 
-// const gt3lt10 = compoundFilter<number>(gt3, lt10)(oneTo20);
+// const filterTest = filter(gt3, lt10)(oneTo20);
 
-// hmm({ oneTo20, gt3lt10 });
+// const dirFilterTest = dirFilter(oneTo20, gt3, lt10);
+
+// const pfFilterTest = pfFilter(gt3, lt10)(oneTo20);
+
+// hmm({ filterTest, dirFilterTest, pfFilterTest });
 
 // const grtThan2 = (x: number) => x > 2;
 

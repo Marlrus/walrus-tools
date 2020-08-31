@@ -38,9 +38,11 @@ export declare const dirMap: <T, U>(fn: MapCBFn<T, U>, x: T[]) => U[];
  */
 export declare const map: <T, U>(fn: MapCBFn<T, U>) => (x: T[]) => U[];
 export declare const pfMap: (fn: Function) => (x: any) => any;
-export declare const dirFilter: <T>(fn: FilterCBFn<T>, x: T[]) => T[];
-export declare const filter: <T>(fn: FilterCBFn<T>) => (x: T[]) => T[];
-export declare const pfFilter: (fn: Function) => (x: any) => any;
+declare type FilterCBFn<T> = (value: T, index?: number, array?: T[]) => boolean;
+export declare const evalPredicates: <T>(...fns: FilterCBFn<T>[]) => (x: T) => boolean;
+export declare const dirFilter: <T>(x: T[], ...fns: FilterCBFn<T>[]) => T[];
+export declare const filter: <T>(...fns: FilterCBFn<T>[]) => (x: T[]) => T[];
+export declare const pfFilter: (...fns: FilterCBFn<any>[]) => (x: any) => any;
 export declare function reduce<T>(callbackFn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T): (x: T[]) => T;
 export declare function reduce<T>(callbackFn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue: T): (x: T[]) => T;
 export declare function reduce<T, U>(callbackFn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): (x: T[]) => U;
@@ -56,8 +58,5 @@ interface AnyIterable {
 export declare const sortIterable: <T extends AnyIterable>(obj: T) => T;
 export declare const deepCopy: <T extends AnyIterable>(obj: T) => T;
 export declare const equals: (x: any, y: any) => boolean;
-declare type FilterCBFn<T> = (value: T, index?: number, array?: T[]) => boolean;
-export declare const evaluate: <T>(fns: FilterCBFn<T>[]) => (x: T) => any;
-export declare const compoundFilter: <T>(...fns: FilterCBFn<T>[]) => (x: T[]) => T[];
 export {};
 //# sourceMappingURL=index.d.ts.map
