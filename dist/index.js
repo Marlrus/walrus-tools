@@ -134,6 +134,7 @@ export const dirMap = (fn, x) => x.map(fn);
  */
 export const map = (fn) => (x) => x.map(fn);
 export const pfMap = (fn) => (x) => x.map(fn);
+// type FilterCBFn<T> = (value: T, index: number, array: T[]) => boolean;
 export const dirFilter = (fn, x) => x.filter(fn);
 export const filter = (fn) => (x) => x.filter(fn);
 export const pfFilter = (fn) => (x) => x.filter(fn);
@@ -211,23 +212,16 @@ export const equals = (x, y) => {
     }
     return true;
 };
-// const user = {
-// 	name: 'Moerse',
-// 	hai: () => hmm('Hai'),
-// 	num: [1, 2, 3, [1, 2, { a: 1, b: 2, bai: () => hmm('bai') }]],
-// 	tie: 1,
-// };
-// const user2 = {
-// 	hai: () => hmm('Hai'),
-// 	num: [1, 2, 3, [1, 2, { b: 2, a: 1, bai: () => hmm('bai') }]],
-// 	tie: 1,
-// 	name: 'Moerse',
-// };
-// hmm(equals(user, user2));
-// hmm(dataEquals(user, user2));
-/*=========================
-TESTING GROUNDS
-===========================*/
+export const evaluate = (fns) => (x) => {
+    const [head, tail] = decoupleHead(fns);
+    return tail.length === 0 ? head(x) : head(x) ? evaluate(tail)(x) : false;
+};
+export const compoundFilter = (...fns) => (x) => x.filter(evaluate(fns));
+// const gt3 = (num: number) => num > 3;
+// const lt10 = (num: number) => num < 10;
+// const oneTo20 = range(21, 1);
+// const gt3lt10 = compoundFilter<number>(gt3, lt10)(oneTo20);
+// hmm({ oneTo20, gt3lt10 });
 // const grtThan2 = (x: number) => x > 2;
 // const add2 = (x: number) => x + 2;
 // const times10 = (x: number) => x * 10;
