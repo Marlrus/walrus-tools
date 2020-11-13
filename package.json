@@ -1,16 +1,31 @@
 {
   "name": "walrus-tools",
   "version": "1.0.0",
-  "description": "FunCtional Tools for TypeScript",
+  "description": "Light FunCtional Tools for TypeScript and JavaScript.",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "prepublish": "tsc",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest -o",
+    "test:all": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Marlrus/walrus-tools"
   },
   "author": "Marlrus",
-  "license": "ISC",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Marlrus/walrus-tools/issues"
+  },
+  "homepage": "https://github.com/Marlrus/walrus-tools",
+  "dependencies": {},
   "devDependencies": {
+    "@types/jest": "^26.0.15",
+    "jest": "^26.6.3",
+    "prettier": "^2.1.2",
+    "ts-jest": "^26.4.4",
     "typescript": "^4.0.2"
   }
 }

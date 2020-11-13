@@ -109,7 +109,7 @@ export const prop = (key) => (obj) => obj[key];
 export const pluck = (keys, obj) => keys.map(k => dirProp(k, obj));
 export const pfPluck = (keys, obj) => keys.map(k => dirProp(k, obj));
 /*==================
-    POINTFREE
+    Array Functions
 ==================*/
 export const pfPipe = (...fns) => (x) => {
     const [head, ...tail] = fns;
@@ -162,19 +162,13 @@ export const evalPredicates = (...fns) => (x) => {
             : false;
 };
 export const dirFilter = (x, ...fns) => {
-    return fns.length === 1
-        ? x.filter(fns[0])
-        : x.filter(evalPredicates(...fns));
+    return fns.length === 1 ? x.filter(fns[0]) : x.filter(evalPredicates(...fns));
 };
 export const filter = (...fns) => (x) => {
-    return fns.length === 1
-        ? x.filter(fns[0])
-        : x.filter(evalPredicates(...fns));
+    return fns.length === 1 ? x.filter(fns[0]) : x.filter(evalPredicates(...fns));
 };
 export const pfFilter = (...fns) => (x) => {
-    return fns.length === 1
-        ? x.filter(fns[0])
-        : x.filter(evalPredicates(...fns));
+    return fns.length === 1 ? x.filter(fns[0]) : x.filter(evalPredicates(...fns));
 };
 export function reduce(fn, initialValue) {
     return function (x) {
