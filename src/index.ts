@@ -56,11 +56,12 @@ export const range = (end: number, start?: number, step = 1) => {
 };
 
 export const pyRange = (start: number, end?: number, step = 1) => {
+  if (start < 0) err('Start has to be a positive integer.');
+
   if (!end) return [...Array(start).keys()];
 
   if (end < 0) err('End param cannot be a negative integer.');
   if (start > end) err('Start cannot be after end param.');
-  if (start < 0) err('Start has to be a positive integer.');
   if (step <= 0) err('Step has to be a positive integer greater than 0.');
 
   const length = Math.ceil((end - start) / step);
