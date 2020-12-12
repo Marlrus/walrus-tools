@@ -66,7 +66,13 @@ describe('Tests for dirPipe Function', () => {
     const times2 = (x: number) => x * 2;
     const minus2 = (x: number) => x - 2;
     const times10 = (x: number) => x * 10;
-    const fourFnPipe = dirPipe(1, add1, times2, minus2, times10);
+    const fourFnPipe = dirPipe<number, number>(
+      1,
+      add1,
+      times2,
+      minus2,
+      times10
+    );
     const nondirPipeFn = (x: number) => times10(minus2(times2(add1(x))));
     expect(fourFnPipe).toBe(nondirPipeFn(1));
   });
