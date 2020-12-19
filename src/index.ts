@@ -211,12 +211,6 @@ export const pfFilter = (...fns: FilterCBFn<any>[]) => (x: any) => {
   return fns.length === 1 ? x.filter(fns[0]) : x.filter(evalPredicates(...fns));
 };
 
-// export const dirFilter = <T>(fn: FilterCBFn<T>, x: T[]) => x.filter(fn);
-
-// export const filter = <T>(fn: FilterCBFn<T>) => (x: T[]) => x.filter(fn);
-
-// export const pfFilter = (fn: Function) => (x: any) => x.filter(fn);
-
 //Reduce
 
 export function reduce<T>(
