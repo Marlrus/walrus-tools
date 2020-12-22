@@ -302,14 +302,6 @@ export const deepCopy = <T extends AnyIterable>(obj: T): T => {
       }, {});
 };
 
-const primitiveEquals = (x: any, y: any) => {
-  const [typeX, typeY] = [typeof x, typeof y];
-  if (typeX !== typeY) return false;
-  if (typeX !== 'function' && typeX !== 'object' && x !== y) return false;
-  if (typeX === 'function' && x.toString() !== y.toString()) return false;
-  return true;
-};
-
 interface AnyIterable {
   [key: string]: any;
 }
@@ -330,7 +322,7 @@ export const sortIterable = <T extends AnyIterable>(obj: T): T => {
 };
 
 export const dataEquals = (x: any, y: any) => {
-  if (typeof x && typeof y) {
+  if (typeof x === typeof y) {
     return typeof x === 'object'
       ? JSON.stringify(sortIterable(x)) === JSON.stringify(sortIterable(y))
       : x === y;
@@ -339,12 +331,20 @@ export const dataEquals = (x: any, y: any) => {
 };
 
 export const equals = (x: any, y: any) => {
-  if (!primitiveEquals(x, y)) return false;
+  const specialEquals = (x: any, y: any) => {
+    const [typeX, typeY] = [typeof x, typeof y];
+    if (typeX !== typeY) return false;
+    if (typeX !== 'function' && typeX !== 'object' && x !== y) return false;
+    if (typeX === 'function' && x.toString() !== y.toString()) return false;
+    return true;
+  };
+
+  if (!specialEquals(x, y)) return false;
   if (typeof x === 'object') {
     const [xKeys, yKeys] = [Object.keys(x).sort(), Object.keys(y).sort()];
     if (xKeys.toString() !== yKeys.toString()) return false;
     for (const key of xKeys) {
-      if (!primitiveEquals(x[key], y[key])) return false;
+      if (!specialEquals(x[key], y[key])) return false;
       if (typeof x[key] === 'object') {
         const deepReturn = equals(x[key], y[key]);
         if (!deepReturn) return false;
