@@ -64,5 +64,12 @@
     /* Advanced Options */
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
   },
-  "exclude": ["node_modules", "dist", "__tests__", "jest.config.js"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "__tests__",
+    "coverage",
+    "jest.config.js",
+    ".prettierrc.js"
+  ]
 }

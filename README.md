@@ -35,7 +35,7 @@ const result: number[] = add2ToArr(numArr);
 
 The functions are separated in the following categories:
 
-- [Utilities](#-Utilities) (IMPURE)
+- [Utilities](#Utilities) (IMPURE)
 - Iterable and Array Creators
 - Basic array Transformations
 - STRING and DATE Utils
