@@ -51,4 +51,10 @@ describe('Tests for pyRange Function', () => {
       'Step has to be a positive integer greater than 0.'
     );
   });
+
+  test('pyRange fails if end is negative', () => {
+    expect(() => pyRange(2, -10, -2)).toThrow(
+      'End param cannot be a negative integer.'
+    );
+  });
 });

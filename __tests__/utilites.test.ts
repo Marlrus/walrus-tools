@@ -28,4 +28,8 @@ describe('Tests for Utils (IMPURE)', () => {
   test('table returns undefined', () => {
     expect(table({})).toBe(undefined);
   });
+
+  test('table returns undefined', () => {
+    expect(table({}, ['hai'])).toBe(undefined);
+  });
 });
