@@ -35,7 +35,7 @@ const result: number[] = add2ToArr(numArr);
 
 The functions are separated in the following categories:
 
-- Utilities (IMPURE)
+- [Utilities](#-Utilities) (IMPURE)
 - Iterable and Array Creators
 - Basic array Transformations
 - STRING and DATE Utils
@@ -43,6 +43,71 @@ The functions are separated in the following categories:
 - Array Functions
 - Object and Array Utilities
 
-## Notes
+## Utilities
 
-Readme is a WIP
+### hmm
+
+Replaces console.log, if left empty it defaults to `ಠ_ಠ`
+
+```typescript
+hmm(); // ಠ_ಠ
+hmm('hai'); // hai
+hmm({ hai: 'hai' }); // { hai: 'hai' }
+```
+
+### err
+
+Throws an Error via `throw new Error`, defaults to `¯\_(ツ)_/¯`
+
+```typescript
+err();
+err('Invalid argument type');
+```
+
+### logger
+
+Logger tool to assist in pipe or compose, logs the value and returns the value.
+
+```typescript
+const getItemTotal = compose<Item[], number>(getTotal, logger, getItems);
+getItemTotal(items); // will log the result of getItems
+```
+
+### startT and stopT
+
+Uses console.time and console.timeEnd to measure execution time based on the name argument passed to it.
+
+```typescript
+startT('/test route time')
+...
+stopT('/test route time')
+```
+
+### table
+
+Replaces the use of console.table
+
+```typescript
+const data = [
+  { name: 'chainsword', quantity: 1, value: 100 },
+  { name: 'bolter', quantity: 2, value: 200 },
+];
+table(data);
+/*
+    ┌─────────┬──────────────┬──────────┬───────┐
+    │ (index) │     name     │ quantity │ value │
+    ├─────────┼──────────────┼──────────┼───────┤
+    │    0    │ 'chainsword' │    1     │  100  │
+    │    1    │   'bolter'   │    2     │  200  │
+    └─────────┴──────────────┴──────────┴───────┘
+*/
+table(data, ['name', 'value']);
+/*
+    ┌─────────┬──────────────┬───────┐
+    │ (index) │     name     │ value │
+    ├─────────┼──────────────┼───────┤
+    │    0    │ 'chainsword' │  100  │
+    │    1    │   'bolter'   │  200  │
+    └─────────┴──────────────┴───────┘
+*/
+```

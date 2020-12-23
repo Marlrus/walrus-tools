@@ -26,10 +26,18 @@ describe('Tests for Utils (IMPURE)', () => {
   });
 
   test('table returns undefined', () => {
-    expect(table({})).toBe(undefined);
+    const data = [
+      { name: 'chainsword', quantity: 1, value: 100 },
+      { name: 'bolter', quantity: 2, value: 200 },
+    ];
+    expect(table(data)).toBe(undefined);
   });
 
   test('table returns undefined', () => {
-    expect(table({}, ['hai'])).toBe(undefined);
+    const data = [
+      { name: 'chainsword', quantity: 1, value: 100 },
+      { name: 'bolter', quantity: 2, value: 200 },
+    ];
+    expect(table(data, ['name', 'value'])).toBe(undefined);
   });
 });

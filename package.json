@@ -7,8 +7,8 @@
   "types": "dist/index.d.ts",
   "prepublish": "tsc",
   "scripts": {
-    "test": "jest -o",
-    "test:all": "jest"
+    "test": "jest",
+    "test:new": "jest -o"
   },
   "repository": {
     "type": "git",
