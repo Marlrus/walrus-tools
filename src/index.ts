@@ -3,19 +3,13 @@ Utilities IMPURE
 =======================*/
 
 export const hmm = (vars?: any) => {
-  if (vars === undefined || vars === null) {
-    console.log(`ಠ_ಠ`);
-  } else {
-    console.log(vars);
-  }
+  if (vars === undefined || vars === null) return console.log(`ಠ_ಠ`);
+  console.log(vars);
 };
 
 export const err = (message?: string) => {
-  if (message === undefined) {
-    throw new Error(`¯\_(ツ)_/¯`);
-  } else {
-    throw new Error(message);
-  }
+  if (message === undefined) throw new Error(`¯\_(ツ)_/¯`);
+  throw new Error(message);
 };
 
 export const logger = <T>(x: T) => {
@@ -27,10 +21,10 @@ export const startT = (name: string) => console.time(name);
 
 export const stopT = (name: string) => console.timeEnd(name);
 
-export const table = (tabularData: any, properties?: string[]) =>
-  properties
-    ? console.table(tabularData, properties)
-    : console.table(tabularData);
+export const table = (tabularData: any, properties?: string[]) => {
+  if (properties) return console.table(tabularData, properties);
+  console.table(tabularData);
+};
 
 /*===========================
 Iterable and Array Creators
@@ -132,56 +126,54 @@ export const pfPipe = (...fns: Function[]) => (x: any): any => {
   const [head, ...tail] = fns;
   const res = head(x);
 
-  return tail.length > 0 ? pipe(...tail)(res) : res;
+  if (tail.length > 0) return pfPipe(...tail)(res);
+  return res;
 };
 
 export const pipe = <In, Out>(...fns: Function[]) => (x: In): Out => {
   const [head, ...tail] = fns;
   const res = head(x);
 
-  return tail.length > 0 ? pipe(...tail)(res) : res;
+  if (tail.length > 0) return pipe<In, Out>(...tail)(res);
+  return res;
 };
 
 export const dirPipe = <In, Out>(x: In, ...fns: Function[]): Out => {
   const [head, ...tail] = fns;
   const res = head(x);
 
-  return tail.length > 0 ? pipe(...tail)(res) : res;
+  if (tail.length > 0) return dirPipe<In, Out>(res, ...tail);
+  return res;
 };
 
 export const pfCompose = (...fns: Function[]) => (x: any): any => {
   const [last, initial] = decoupleTail(fns);
   const res = last(x);
 
-  return initial.length > 0 ? compose(...initial)(res) : res;
+  if (initial.length > 0) return pfCompose(...initial)(res);
+  return res;
 };
 
 export const compose = <In, Out>(...fns: Function[]) => (x: In): Out => {
   const [last, initial] = decoupleTail(fns);
   const res = last(x);
 
-  return initial.length > 0 ? compose(...initial)(res) : res;
+  if (initial.length > 0) return compose<In, Out>(...initial)(res);
+  return res;
 };
 
 export const dirCompose = <In, Out>(x: In, ...fns: Function[]): Out => {
   const [last, initial] = decoupleTail(fns);
   const res = last(x);
 
-  return initial.length > 0 ? compose(...initial)(res) : res;
+  if (initial.length > 0) return dirCompose<In, Out>(res, ...initial);
+  return res;
 };
 
 type MapCBFn<T, U> = (value: T, index: number, array: T[]) => U;
 
 export const dirMap = <T, U>(fn: MapCBFn<T, U>, x: T[]): U[] => x.map(fn);
-/**
- * Curried Function.
- *
- * TS Typing: map: <T, U>(fn: MapCBFn<T, U>) => (x: T[]) => U[]
- *
- * First Execution: Takes a Map Callback Fn as its first argument.
- *
- * Second Execution: Takes a value to be mapped over.
- */
+
 export const map = <T, U>(fn: MapCBFn<T, U>) => (x: T[]): U[] => x.map(fn);
 
 export const pfMap = (fn: Function) => (x: any) => x.map(fn);
@@ -192,23 +184,24 @@ export const evalPredicates = <T>(...fns: FilterCBFn<T>[]) => (
   x: T
 ): boolean => {
   const [head, tail] = decoupleHead(fns);
-  return tail.length === 0
-    ? head(x)
-    : head(x)
-    ? evalPredicates(...tail)(x)
-    : false;
+  if (tail.length === 0) return head(x);
+  if (head(x)) return evalPredicates(...tail)(x);
+  return false;
 };
 
 export const dirFilter = <T>(x: T[], ...fns: FilterCBFn<T>[]) => {
-  return fns.length === 1 ? x.filter(fns[0]) : x.filter(evalPredicates(...fns));
+  if (fns.length === 1) return x.filter(fns[0]);
+  return x.filter(evalPredicates(...fns));
 };
 
 export const filter = <T>(...fns: FilterCBFn<T>[]) => (x: T[]) => {
-  return fns.length === 1 ? x.filter(fns[0]) : x.filter(evalPredicates(...fns));
+  if (fns.length === 1) return x.filter(fns[0]);
+  return x.filter(evalPredicates(...fns));
 };
 
 export const pfFilter = (...fns: FilterCBFn<any>[]) => (x: any) => {
-  return fns.length === 1 ? x.filter(fns[0]) : x.filter(evalPredicates(...fns));
+  if (fns.length === 1) return x.filter(fns[0]);
+  return x.filter(evalPredicates(...fns));
 };
 
 //Reduce
@@ -241,12 +234,15 @@ export function reduce<T, U>(
 ): (x: T[]) => U;
 export function reduce(fn: any, initialValue?: any) {
   return function (x: any[]) {
-    return initialValue ? x.reduce(fn, initialValue) : x.reduce(fn);
+    if (initialValue) return x.reduce(fn, initialValue);
+    return x.reduce(fn);
   };
 }
 
-export const pfReduce = (fn: any, initialValue?: any) => (x: any[]) =>
-  initialValue ? x.reduce(fn, initialValue) : x.reduce(fn);
+export const pfReduce = (fn: any, initialValue?: any) => (x: any[]) => {
+  if (initialValue) return x.reduce(fn, initialValue);
+  return x.reduce(fn);
+};
 
 export function dirReduce<T>(
   x: T[],
@@ -278,7 +274,8 @@ export function dirReduce<T, U>(
   initialValue: U
 ): U;
 export function dirReduce(x: any[], fn: any, initialValue?: any) {
-  return initialValue ? x.reduce(fn, initialValue) : x.reduce(fn);
+  if (initialValue) return x.reduce(fn, initialValue);
+  return x.reduce(fn);
 }
 
 /*========================
@@ -289,17 +286,18 @@ export const copyValues = <T>(x: T): T => JSON.parse(JSON.stringify(x));
 
 export const deepCopy = <T extends AnyIterable>(obj: T): T => {
   const keys = Object.keys(obj);
-  return obj.length
-    ? keys.reduce((copy: any, key: string) => {
-        const node =
-          typeof obj[key] === 'object' ? deepCopy(obj[key]) : obj[key];
-        return (copy[key] = node), copy;
-      }, [])
-    : keys.reduce((copy: any, key: string) => {
-        const node =
-          typeof obj[key] === 'object' ? deepCopy(obj[key]) : obj[key];
-        return (copy[key] = node), copy;
-      }, {});
+
+  if (obj.length) {
+    return keys.reduce((copy: any, key: string) => {
+      const node = typeof obj[key] === 'object' ? deepCopy(obj[key]) : obj[key];
+      return (copy[key] = node), copy;
+    }, []);
+  }
+
+  return keys.reduce((copy: any, key: string) => {
+    const node = typeof obj[key] === 'object' ? deepCopy(obj[key]) : obj[key];
+    return (copy[key] = node), copy;
+  }, {});
 };
 
 interface AnyIterable {
@@ -308,26 +306,27 @@ interface AnyIterable {
 
 export const sortIterable = <T extends AnyIterable>(obj: T): T => {
   const keys = Object.keys(obj).sort();
-  return obj.length
-    ? keys.reduce((sorted: any, key: string) => {
-        const node =
-          typeof obj[key] === 'object' ? sortIterable(obj[key]) : obj[key];
-        return (sorted[key] = node), sorted;
-      }, [])
-    : keys.reduce((sorted: any, key: string) => {
-        const node =
-          typeof obj[key] === 'object' ? sortIterable(obj[key]) : obj[key];
-        return (sorted[key] = node), sorted;
-      }, {});
+
+  if (obj.length) {
+    return keys.reduce((sorted: any, key: string) => {
+      const node =
+        typeof obj[key] === 'object' ? sortIterable(obj[key]) : obj[key];
+      return (sorted[key] = node), sorted;
+    }, []);
+  }
+
+  return keys.reduce((sorted: any, key: string) => {
+    const node =
+      typeof obj[key] === 'object' ? sortIterable(obj[key]) : obj[key];
+    return (sorted[key] = node), sorted;
+  }, {});
 };
 
 export const dataEquals = (x: any, y: any) => {
-  if (typeof x === typeof y) {
-    return typeof x === 'object'
-      ? JSON.stringify(sortIterable(x)) === JSON.stringify(sortIterable(y))
-      : x === y;
-  }
-  return false;
+  if (typeof x !== typeof y) return false;
+  if (typeof x === 'object')
+    return JSON.stringify(sortIterable(x)) === JSON.stringify(sortIterable(y));
+  return x === y;
 };
 
 export const equals = (x: any, y: any) => {

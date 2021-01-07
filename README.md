@@ -1,6 +1,6 @@
 # Walrus Tools
 
-Basic tooling for Functional programming using TypeScript. It works around TypeScript typing limitations for functional programming by creating standardized variations of common utilities as a workaround.
+Basic tooling for Functional programming using TypeScript. It works around TypeScript typing limitations for functional programming by creating standardized variations of common utilities.
 
 ## Basics and Caveats
 
@@ -36,7 +36,7 @@ const result: number[] = add2ToArr(numArr);
 The functions are separated in the following categories:
 
 - [Utilities](#Utilities) (IMPURE)
-- Iterable and Array Creators
+- [Iterable and Array Creators](#iterable-and-array-creators)
 - Basic array Transformations
 - STRING and DATE Utils
 - Getters
@@ -44,6 +44,8 @@ The functions are separated in the following categories:
 - Object and Array Utilities
 
 ## Utilities
+
+[index](#package-categories)
 
 ### hmm
 
@@ -111,3 +113,7 @@ table(data, ['name', 'value']);
     └─────────┴──────────────┴───────┘
 */
 ```
+
+## Iterable and Array Creators
+
+[index](#package-categories)
